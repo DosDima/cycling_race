@@ -1,0 +1,28 @@
+{
+  "name": "cycling_race",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "type":"commonjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DosDima/cycling_race.git"
+  },
+  "author": "Dima Dostoevskiy",
+  "license": "SEE LICENSE IN LICENSE file",
+  "bugs": {
+    "url": "https://github.com/DosDima/cycling_race/issues"
+  },
+  "homepage": "https://github.com/DosDima/cycling_race#readme",
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "electron": "^32.1.2"
+  },
+  "dependencies": {
+    "serialport": "^12.0.0"
+  }
+}
