@@ -1,10 +1,45 @@
-.indicator{
-    width: 40px;
-    height: 40px;
-    background-color: red;
+* {
+  position: relative;
+  display: block;
 }
-
-.indicator_active{
-    background-color: green;
+body {
+  padding: 0;
+  margin: 0;
+  background-color: rgb(34, 34, 34);
 }
-
+nav {
+  padding: 8px;
+  margin-bottom: 8px;
+  height: 54px;
+  background-color: rgb(92, 94, 92);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar_controls {
+  display: flex;
+  flex-direction: row;
+}
+main {
+  min-width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+canvas {
+  background-color: rgb(127, 174, 201);
+}
+.indicator {
+  width: 40px;
+  height: 40px;
+  background-color: red;
+}
+.indicator__active {
+  background-color: green;
+}
+.btn {
+  margin: 4px;
+}

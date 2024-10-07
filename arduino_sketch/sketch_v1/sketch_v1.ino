@@ -1,40 +1,80 @@
-/*
- * Arduino wiring:
- *
- * Digital pin  Connected to
- * -----------  ------------
- * 2            Sensor 0
- * 3            Sensor 1
- * 4            Sensor 2
- * 5            Sensor 3
- */
+bool isRace = true;
 
-int statusLEDPin = 13;
-boolean isRace = false;
-char val = 0;
-char val1 = 0;
+int pin_A = A0;
 
-void checkSerial() {
+char PC_COMMAND = 0;
+
+unsigned long A = 0;
+unsigned long B = 100;
+unsigned long C = 200;
+unsigned long D = 300;
+int read_A = 0;
+int old_A = 0;
+
+unsigned long time;
+unsigned long timeFromtart;
+unsigned long delayTime = 1000;
+
+void startRace() {
+  if (isRace == true) return;
+  isRace = true;
+  digitalWrite(13, HIGH);
+}
+
+void stopRace() {
+  if (isRace == false) return;
+  isRace = false;
+  A = 0;
+  digitalWrite(13, LOW);
+}
+
+void getCommandFromSerial() {
   if (Serial.available() > 0) {
-    val = Serial.read();
-    val1 = val;
-    if (val == '1') {
-      isRace = true;
-      digitalWrite(13, HIGH);
+    PC_COMMAND = Serial.read();
+
+    if (PC_COMMAND == '1') {
+      startRace();
     }
-    if (val == '0') {
-      digitalWrite(13, LOW);
-      isRace = false;
+    if (PC_COMMAND == '0') {
+      stopRace();
     }
   }
+}
+
+void sendDataToSerial() {
+  if (Serial.availableForWrite() > 0) {
+    Serial.print(A);
+    Serial.print(":");
+    Serial.print(B);
+    Serial.print(":");
+    Serial.print(C);
+    Serial.print(":");
+    Serial.print(D);
+    Serial.println();
+  }
+}
+
+void checkA() {
+  old_A = read_A;
+  read_A = analogRead(pin_A);
+  if (abs(old_A - read_A) > 900) A++;
 }
 
 void setup() {
   Serial.begin(115200);
   pinMode(13, OUTPUT);
+  pinMode(pin_A, INPUT);
 }
 
 void loop() {
-  checkSerial();
-  Serial.println(val1);
+  getCommandFromSerial();
+
+  if (isRace == true) {
+    checkA();
+    timeFromtart = millis();
+    if (timeFromtart - time > delayTime) {
+      sendDataToSerial();
+      time = timeFromtart;
+    }
+  }
 }
