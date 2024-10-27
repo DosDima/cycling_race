@@ -7,18 +7,90 @@
     <link rel="stylesheet" href="./assets/style.css" />
   </head>
   <body>
-    <nav>
-      <div id="race-indicator" class="indicator"></div>
-      <div class="navbar_controls">
-        <button class="btn" id="btn-start">start race</button>
-        <button class="btn" id="btn-stop">stop race</button>
+    <div class="popap__overlay" id="popap">
+      <div class="popap__card">
+        <div class="popap__section">
+          <div style="display: flex; flex-direction: column">
+            <label for="rider_1_name">rider 1</label>
+            <input
+              style="width: 240px; margin-right: 8px"
+              type="text"
+              id="rider_1_name"
+              required
+            />
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <label for="rider_1_r">Choose radius:</label>
+            <select name="rider_1_r" id="rider_1_r">
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+            </select>
+          </div>
+        </div>
+        <div class="popap__section">
+          <div style="display: flex; flex-direction: column">
+            <label for="rider_2_name">rider 2</label>
+            <input
+              style="width: 240px; margin-right: 8px"
+              type="text"
+              id="rider_2_name"
+              required
+            />
+          </div>
+          <div style="display: flex; flex-direction: column">
+            <label for="rider_2_r">Choose radius:</label>
+            <select name="rider_2_r" id="rider_2_r">
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+            </select>
+          </div>
+        </div>
+        <div class="btn" id="btn-start-race">Начать гонку!</div>
       </div>
-    </nav>
-
+    </div>
+    <div class="riders-info">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">_</th>
+            <th scope="col">Rider</th>
+            <th scope="col">Metres</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <th>Chris Chris</th>
+            <td>250 m</td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <th>Dennis Chris</th>
+            <td>124 m</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <header>
+      <div class="race-time" id="race_time">22:22:42</div>
+    </header>
     <main>
-      <canvas id="canvas" width="1024" height="500"></canvas>
+      <canvas id="canvas" width="1200" height="240"></canvas>
     </main>
-
-    <script crossorigin src="./src/index.js"></script>
+    <footer>
+      <div class="btn" id="btn-start">Start</div>
+      <div id="race-indicator" class="indicator"></div>
+    </footer>
+    <script src="./src/script.js"></script>
   </body>
 </html>

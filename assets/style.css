@@ -1,45 +1,178 @@
-* {
-  position: relative;
-  display: block;
+:root {
+  --color-primary: rgb(252, 78, 3);
+  --color-background: rgb(13, 11, 11);
+  --color-text-secondary: rgb(184, 177, 177);
 }
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   padding: 0;
   margin: 0;
-  background-color: rgb(34, 34, 34);
+  background-image: url(./picture/bg_1.png);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
-nav {
-  padding: 8px;
-  margin-bottom: 8px;
-  height: 54px;
-  background-color: rgb(92, 94, 92);
+
+header {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  /* background-color: antiquewhite; */
 }
+
 .navbar_controls {
   display: flex;
   flex-direction: row;
 }
+
 main {
-  min-width: 100%;
-  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  width: 100%;
+}
+
+canvas {
+  position: absolute;
+  top: 420px;
+  background-image: url(./picture/road_1png.png);
+}
+
+.indicator {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.indicator__active {
+  background-color: greenyellow;
+}
+
+.btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 4px;
+  width: 228px;
+  height: 42px;
+  color: var(--color-background);
+  background-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.race-time {
+  position: absolute;
+  top: 54px;
+  left: 42%;
+  color: black;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.racers-info {
+  position: fixed;
+  color: white;
+  padding: 16px;
+}
+
+table {
+  text-align: left;
+  width: 320px;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+}
+
+tr {
+  padding: 4px;
+}
+
+.popap__overlay {
+  position: fixed;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  opacity: 0;
+  z-index: -777;
 }
-canvas {
-  background-color: rgb(127, 174, 201);
+
+.popap__overlay_active {
+  opacity: 1;
+  z-index: 777;
 }
-.indicator {
-  width: 40px;
-  height: 40px;
-  background-color: red;
+
+.popap__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+  padding: 24px;
+  background-color: var(--color-background);
 }
-.indicator__active {
-  background-color: green;
+
+.popap__section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: end;
 }
-.btn {
-  margin: 4px;
+
+input {
+  height: 32px;
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  border-color: var(--color-primary);
+  background: rgb(224, 110, 33);
+  margin-bottom: 16px;
+}
+
+label{
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+select{
+  height: 32px;
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  border-color: var(--color-primary);
+  background: rgb(224, 110, 33);
+  margin-bottom: 16px;
 }
