@@ -6,7 +6,6 @@ const startRaceBtn = document.getElementById("btn_start_race");
 const indicator = document.getElementById("race_indicator");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const popap = document.getElementById("popap");
 const raceTime = document.getElementById("race_time");
 const inputDistance = document.getElementById("distance");
 const inputName1 = document.getElementById("rider_1_name");
@@ -17,9 +16,10 @@ const tName1 = document.getElementById("t_mame_1");
 const tName2 = document.getElementById("t_mame_2");
 const tDist1 = document.getElementById("t_dist_1");
 const tDist2 = document.getElementById("t_dist_2");
+const startPopap = document.getElementById("start_popap");
+const winPopap = document.getElementById("win_popap");
 const winName = document.getElementById("win_name");
 const winTime = document.getElementById("win_time");
-const winPopap = document.getElementById("win_popap");
 const winDistance = document.getElementById("win_distance");
 
 let isStart = false;
@@ -30,7 +30,8 @@ let timeSec = 0;
 let timeMinutes = 0;
 let timerId;
 let riders = [];
-let stringTime = '00.00.0'
+let stringTime = "00.00.0";
+let drowCof = 0;
 
 const port = new SerialPort({
   path: "COM4",
@@ -43,41 +44,34 @@ const port = new SerialPort({
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
 class Rider {
-  constructor(x, y, width, height, color, name, radius = 17, distance = 0) {
+  constructor(x, y, width, height, name, mph, distance, image) {
     this.height = height;
     this.width = width;
     this.x = x;
     this.y = y;
-    this.color = color;
     this.name = name;
-    this.radius = radius;
+    this.mph = mph;
     this.distance = distance;
-  }
-
-  init() {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.image = image;
   }
 
   update(newX) {
-    ctx.clearRect(this.x, this.y, this.width, this.height);
     this.x = newX;
-    this.distance = newX * this.radius;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    const img = new Image(this.width, this.height);
+    img.src = this.image;
+    this.distance = (newX * 2136) / 1000;
+    ctx.drawImage(
+      img,
+      this.distance * drowCof,
+      this.y,
+      this.width,
+      this.height
+    );
   }
 }
 
 const init = () => {
   openPort();
-};
-
-const openPort = async () => {
-  port.open((err) => {
-    if (err) alert(`Failed to open port. Error: ${err}`);
-    return false;
-  });
-  getDataFromPort();
-  return true;
 };
 
 const closePort = () => {
@@ -86,16 +80,6 @@ const closePort = () => {
     return false;
   });
   return true;
-};
-
-const getDataFromPort = () => {
-  parser.on("data", (data) => {
-    indicator.classList.toggle("indicator__active");
-    const arr = data.split(":");
-    for (let i = 0; i < riders.length; i++) {
-      riders[i].update(arr[i]);
-    }
-  });
 };
 
 const sendToPort = (val) => {
@@ -111,10 +95,6 @@ const stopRace = () => {
   isStart = false;
   clearInterval(timerId);
 
-  winName.innerText = `Победитель: ${riders[0].name}`;
-  winTime.innerText = `Время: ${stringTime}`;
-  winDistance.innerText = `Дистанция: ${DISTANCE} m.`;
-
   time = 0;
   timeMilisec = 0;
   timeSec = 0;
@@ -126,6 +106,7 @@ const stopRace = () => {
 
 const update = () => {
   if (!isStart) return;
+
   time++;
   timeSec += 0.1;
   if (timeSec > 59) {
@@ -140,48 +121,80 @@ const update = () => {
   raceTime.innerText = stringTime;
   tDist1.innerText = riders[0].distance;
   tDist2.innerText = riders[1].distance;
-
-  riders.forEach((rider) => {
-    if (rider.distance >= DISTANCE) {
-      stopRace();
-    }
-  });
 };
 
 const startRace = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  riders[0] = new Rider(10, 0, 50, 50, "red");
-  riders[1] = new Rider(10, 100, 50, 50, "red");
-  riders.forEach((rider) => rider.init());
-  
+
   DISTANCE = parseInt(inputDistance?.value) || 250;
-  
-  riders[0].name = inputName1?.value || "rider 1";
-  riders[1].name = inputName2?.value || "rider 2";
-  
-  riders[0].radius = parseInt(inputRad1?.value) || 17;
-  riders[1].radius = parseInt(inputRad2?.value) || 17;
-  
-  tName1.innerText = riders[0].name;
-  tName2.innerText = riders[1].name;
-  
-  isStart = true;
-  
-  raceTime.innerText = `00:00:0`;
-  indicator.classList.add("indicator__active");
-  popap.classList.remove("popap__overlay_active");
-  
+  drowCof = 1100 / DISTANCE;
+
+  riders[0] = new Rider(
+    0,
+    40,
+    100,
+    64,
+    inputName1?.value,
+    parseInt(inputRad1?.value),
+    0,
+    "./assets/picture/racer_1.png"
+  );
+  riders[1] = new Rider(
+    0,
+    150,
+    100,
+    64,
+    inputName2?.value,
+    parseInt(inputRad2?.value),
+    0,
+    "./assets/picture/racer_2.png"
+  );
+
   timerId = setInterval(update, 100);
 
   sendToPort("1");
+
+  isStart = true;
+
+  raceTime.innerText = `00:00:0`;
+  tName1.innerText = riders[0].name;
+  tName2.innerText = riders[1].name;
+  indicator.classList.add("indicator__active");
+  startPopap.classList.remove("popap__overlay_active");
 };
 
-const openPopapBtnHndler = async () => {
+const getDataFromPort = () => {
+  parser.on("data", (data) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    indicator.classList.toggle("indicator__active");
+    const arr = data.split(":");
+    for (let i = 0; i < riders.length; i++) {
+      riders[i].update(arr[i]);
+      if (riders[i].distance >= DISTANCE) {
+        winName.innerText = `Победитель: ${riders[i].name}`;
+        winTime.innerText = `Время: ${stringTime}`;
+        winDistance.innerText = `Дистанция: ${DISTANCE} m.`;
+        stopRace();
+      }
+    }
+    update();
+  });
+};
+
+const openPort = async () => {
+  port.open((err) => {
+    if (err) alert(`Failed to open port. Error: ${err}`);
+    return false;
+  });
+  getDataFromPort();
+  return true;
+};
+
+const openStartPopapBtnHndler = async () => {
   if (isStart) {
     stopRace();
   } else {
-    
-    popap.classList.add("popap__overlay_active");
+    startPopap.classList.add("popap__overlay_active");
   }
 };
 
@@ -189,7 +202,8 @@ winPopap.addEventListener("click", () => {
   winPopap.classList.remove("popap__overlay_active");
 });
 
-openPopapBtn.addEventListener("click", openPopapBtnHndler);
+openPopapBtn.addEventListener("click", openStartPopapBtnHndler);
 startRaceBtn.addEventListener("click", startRace);
 
 window.addEventListener("load", init);
+window.addEventListener("beforeunload", closePort);

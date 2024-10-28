@@ -1,11 +1,13 @@
 {
   "name": "cycling_race",
   "version": "1.0.0",
-  "description": "",
+  "description": "Cycling race at home",
   "main": "main.js",
-  "type":"commonjs",
+  "type": "commonjs",
   "scripts": {
     "start": "electron .",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,9 +22,16 @@
   "homepage": "https://github.com/DosDima/cycling_race#readme",
   "devDependencies": {
     "@types/node": "^22.7.4",
-    "electron": "^32.1.2"
+    "electron": "^32.1.2",
+    "electron-builder": "^25.1.8"
   },
   "dependencies": {
     "serialport": "^12.0.0"
+  },
+  "build": {
+    "appId": "cycling_race",
+    "mac": {
+      "category": "your.app.category.type"
+    }
   }
 }

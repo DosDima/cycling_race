@@ -1,30 +1,32 @@
-bool isRace = true;
+bool isRace = false;
 
 int pin_A = A0;
 
 char PC_COMMAND = 0;
 
 unsigned long A = 0;
-unsigned long B = 100;
-unsigned long C = 200;
-unsigned long D = 300;
 int read_A = 0;
 int old_A = 0;
 
+unsigned long B = 100;
+unsigned long C = 200;
+unsigned long D = 300;
+
 unsigned long time;
 unsigned long timeFromtart;
-unsigned long delayTime = 1000;
+unsigned long delayTime = 100;
 
 void startRace() {
-  if (isRace == true) return;
   isRace = true;
   digitalWrite(13, HIGH);
 }
 
 void stopRace() {
-  if (isRace == false) return;
   isRace = false;
   A = 0;
+  B = 0;
+  C = 0;
+  D = 0;
   digitalWrite(13, LOW);
 }
 
@@ -57,7 +59,7 @@ void sendDataToSerial() {
 void checkA() {
   old_A = read_A;
   read_A = analogRead(pin_A);
-  if (abs(old_A - read_A) > 900) A++;
+  if ((read_A - old_A) > 900) A++;
 }
 
 void setup() {
@@ -68,6 +70,7 @@ void setup() {
 
 void loop() {
   getCommandFromSerial();
+
 
   if (isRace == true) {
     checkA();
