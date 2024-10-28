@@ -23,14 +23,14 @@ const winTime = document.getElementById("win_time");
 const winDistance = document.getElementById("win_distance");
 
 let isStart = false;
+let distance = 0;
 let time = 0;
-let DISTANCE = 0;
+let stringTime = "00.00.0";
 let timeMilisec = 0;
 let timeSec = 0;
 let timeMinutes = 0;
 let timerId;
 let riders = [];
-let stringTime = "00.00.0";
 let drowCof = 0;
 
 const port = new SerialPort({
@@ -70,15 +70,12 @@ class Rider {
   }
 }
 
-const init = () => {
-  openPort();
-};
-
-const closePort = () => {
-  port.close((err) => {
-    if (err) alert(`Failed to close port. Error: ${err}`);
+const openPort = async () => {
+  port.open((err) => {
+    if (err) alert(`Failed to open port. Error: ${err}`);
     return false;
   });
+  getDataFromPort();
   return true;
 };
 
@@ -90,44 +87,38 @@ const sendToPort = (val) => {
   });
 };
 
-const stopRace = () => {
-  sendToPort("0");
-  isStart = false;
-  clearInterval(timerId);
+const getDataFromPort = () => {
+  parser.on("data", (data) => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    indicator.classList.toggle("indicator__active");
+    const arr = data.split(":");
 
-  time = 0;
-  timeMilisec = 0;
-  timeSec = 0;
-  timeMinutes = 0;
-
-  winPopap.classList.add("popap__overlay_active");
-  indicator.classList.remove("indicator__active");
+    for (let i = 0; i < riders.length; i++) {
+      riders[i].update(arr[i]);
+      if (riders[i].distance >= distance) {
+        winName.innerText = `Победитель: ${riders[i].name}`;
+        winTime.innerText = `Время: ${stringTime}`;
+        winDistance.innerText = `Дистанция: ${distance} m.`;
+        stopRace();
+      }
+    }
+    update();
+  });
 };
 
-const update = () => {
-  if (!isStart) return;
-
-  time++;
-  timeSec += 0.1;
-  if (timeSec > 59) {
-    timeSec = 0;
-    timeMinutes++;
-  }
-  timeMilisec = time % 10;
-  stringTime = `${timeMinutes > 9 ? timeMinutes : `0${timeMinutes}`}:${
-    timeSec > 10 ? Math.floor(timeSec) : `0${Math.floor(timeSec)}`
-  }:${timeMilisec}`;
-
-  raceTime.innerText = stringTime;
-  tDist1.innerText = riders[0].distance;
-  tDist2.innerText = riders[1].distance;
+const closePort = () => {
+  port.close((err) => {
+    if (err) alert(`Failed to close port. Error: ${err}`);
+    return false;
+  });
+  return true;
 };
 
 const startRace = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  DISTANCE = parseInt(inputDistance?.value) || 250;
-  drowCof = 1100 / DISTANCE;
+  distance = parseInt(inputDistance?.value) || 250;
+  drowCof = 1100 / distance;
 
   riders[0] = new Rider(
     0,
@@ -163,46 +154,53 @@ const startRace = () => {
   startPopap.classList.remove("popap__overlay_active");
 };
 
-const getDataFromPort = () => {
-  parser.on("data", (data) => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    indicator.classList.toggle("indicator__active");
-    const arr = data.split(":");
-    for (let i = 0; i < riders.length; i++) {
-      riders[i].update(arr[i]);
-      if (riders[i].distance >= DISTANCE) {
-        winName.innerText = `Победитель: ${riders[i].name}`;
-        winTime.innerText = `Время: ${stringTime}`;
-        winDistance.innerText = `Дистанция: ${DISTANCE} m.`;
-        stopRace();
-      }
-    }
-    update();
-  });
-};
-
-const openPort = async () => {
-  port.open((err) => {
-    if (err) alert(`Failed to open port. Error: ${err}`);
-    return false;
-  });
-  getDataFromPort();
-  return true;
-};
-
-const openStartPopapBtnHndler = async () => {
-  if (isStart) {
-    stopRace();
-  } else {
+const stopRace = () => {
+  if (!isStart) {
     startPopap.classList.add("popap__overlay_active");
+    return;
   }
+
+  sendToPort("0");
+  isStart = false;
+  clearInterval(timerId);
+
+  time = 0;
+  timeMilisec = 0;
+  timeSec = 0;
+  timeMinutes = 0;
+
+  winPopap.classList.add("popap__overlay_active");
+  indicator.classList.remove("indicator__active");
+};
+
+const init = () => {
+  openPort();
+};
+
+const update = () => {
+  if (!isStart) return;
+
+  time++;
+  timeSec += 0.1;
+  if (timeSec > 59) {
+    timeSec = 0;
+    timeMinutes++;
+  }
+  timeMilisec = time % 10;
+  stringTime = `${timeMinutes > 9 ? timeMinutes : `0${timeMinutes}`}:${
+    timeSec > 10 ? Math.floor(timeSec) : `0${Math.floor(timeSec)}`
+  }:${timeMilisec}`;
+
+  raceTime.innerText = stringTime;
+  tDist1.innerText = riders[0].distance;
+  tDist2.innerText = riders[1].distance;
 };
 
 winPopap.addEventListener("click", () => {
   winPopap.classList.remove("popap__overlay_active");
 });
 
-openPopapBtn.addEventListener("click", openStartPopapBtnHndler);
+openPopapBtn.addEventListener("click", stopRace);
 startRaceBtn.addEventListener("click", startRace);
 
 window.addEventListener("load", init);

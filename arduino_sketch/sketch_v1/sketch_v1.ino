@@ -1,6 +1,7 @@
 bool isRace = false;
 
 int pin_A = A0;
+int pin_B = A1;
 
 char PC_COMMAND = 0;
 
@@ -8,7 +9,10 @@ unsigned long A = 0;
 int read_A = 0;
 int old_A = 0;
 
-unsigned long B = 100;
+unsigned long B = 0;
+int read_B = 0;
+int old_B = 0;
+
 unsigned long C = 200;
 unsigned long D = 300;
 
@@ -62,6 +66,12 @@ void checkA() {
   if ((read_A - old_A) > 900) A++;
 }
 
+void checkB() {
+  old_B = read_B;
+  read_B = analogRead(pin_B);
+  if ((read_B - old_B) > 900) B++;
+}
+
 void setup() {
   Serial.begin(115200);
   pinMode(13, OUTPUT);
@@ -70,10 +80,10 @@ void setup() {
 
 void loop() {
   getCommandFromSerial();
-
-
+  
   if (isRace == true) {
     checkA();
+    checkB();
     timeFromtart = millis();
     if (timeFromtart - time > delayTime) {
       sendDataToSerial();
