@@ -1,15 +1,36 @@
 const { SerialPort } = require("serialport");
 const { ReadlineParser } = require("@serialport/parser-readline");
 
-const startBtn = document.getElementById("btn-start");
-const startRaceBtn = document.getElementById("btn-start-race");
-const indicator = document.getElementById("race-indicator");
+const openPopapBtn = document.getElementById("btn_open_popap");
+const startRaceBtn = document.getElementById("btn_start_race");
+const indicator = document.getElementById("race_indicator");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const popap = document.getElementById("popap");
 const raceTime = document.getElementById("race_time");
 
+const inputDistance = document.getElementById("distance");
+
+const inputName1 = document.getElementById("rider_1_name");
+const inputName2 = document.getElementById("rider_2_name");
+
+const inputRad1 = document.getElementById("rider_1_r");
+const inputRad2 = document.getElementById("rider_2_r");
+
+const tName1 = document.getElementById("t_mame_1");
+const tName2 = document.getElementById("t_mame_2");
+
+const tDist1 = document.getElementById("t_dist_1");
+const tDist2 = document.getElementById("t_dist_2");
+
 let isStart = false;
+let time = 0;
+let DISTANCE = 0;
+let timeMilisec = 0;
+let timeSec = 0;
+let timeMinutes = 0;
+let timerId = null;
+
 const ryders = [];
 
 const port = new SerialPort({
@@ -23,12 +44,15 @@ const port = new SerialPort({
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
 class Rider {
-  constructor(x, y, width, height, color) {
+  constructor(x, y, width, height, color, name, radius = 17, distance = 0) {
     this.height = height;
     this.width = width;
     this.x = x;
     this.y = y;
     this.color = color;
+    this.name = name;
+    this.radius = radius;
+    this.distance = distance;
   }
 
   init() {
@@ -39,20 +63,15 @@ class Rider {
   update(newX) {
     ctx.clearRect(this.x, this.y, this.width, this.height);
     this.x = newX;
+    this.distance = newX * this.radius;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 }
 
-const initRyders = () => {
+const init = () => {
   ryders.push(new Rider(10, 0, 50, 50, "red"));
   ryders.push(new Rider(10, 100, 50, 50, "red"));
   ryders.forEach((rider) => rider.init());
-};
-
-const updateRiders = (data) => {
-  for (let i = 0; i < ryders.length; i++) {
-    ryders[i].update(data[i]);
-  }
 };
 
 const openPort = () => {
@@ -71,33 +90,22 @@ const closePort = () => {
   return true;
 };
 
-const startBtnHndler = () => popap.classList.add("popap__overlay_active");
-
-const startRace = () => {
-  const isOpen = openPort();
-  if (!isOpen) return;
-  isStart = true;
-  raceTime.innerText = `00:00:00`;
-
-  sendToPort("1");
-  getDataFromPort();
-
-  indicator.classList.add("indicator__active");
-  popap.classList.remove("popap__overlay_active");
-};
-
-const stopRace = () => {
-  isStart = false;
-  sendToPort("0");
-  const isClose = closePort();
-  if (!isClose) return;
-  indicator.classList.remove("indicator__active");
+const openPopapBtnHndler = () => {
+  if (isStart) {
+    stopRace();
+  } else {
+    popap.classList.add("popap__overlay_active");
+  }
 };
 
 const getDataFromPort = () => {
   parser.on("data", (data) => {
-    const ridersData = data.split(":");
-    updateRiders(ridersData);
+    indicator.classList.toggle("indicator__active");
+    const arr = data.split(":");
+
+    for (let i = 0; i < ryders.length; i++) {
+      ryders[i].update(arr[i]);
+    }
   });
 };
 
@@ -109,6 +117,63 @@ const sendToPort = (val) => {
   });
 };
 
-startBtn.addEventListener("click", startBtnHndler);
+const stopRace = () => {
+  isStart = false;
+  time = 0;
+  clearInterval(timerId);
+  sendToPort("0");
+  closePort();
+  indicator.classList.remove("indicator__active");
+};
+
+const update = () => {
+  time++;
+  timeSec += 0.1;
+  if (timeSec > 59) {
+    timeSec = 0;
+    timeMinutes++;
+  }
+  timeMilisec = time % 10;
+  raceTime.innerText = `${timeMinutes > 9 ? timeMinutes : `0${timeMinutes}`}:${
+    timeSec > 10 ? Math.floor(timeSec) : `0${Math.floor(timeSec)}`
+  }:${timeMilisec}`;
+
+  tDist1.innerText = ryders[0].distance;
+  tDist2.innerText = ryders[1].distance;
+
+  if (ryders[0].distance >= DISTANCE) {
+    console.log(`WIN `);
+    stopRace();
+  }
+};
+
+const startRace = () => {
+  DISTANCE = parseInt(inputDistance?.value) || 250;
+
+  ryders[0].name = inputName1?.value || "rider 1";
+  ryders[1].name = inputName2?.value || "rider 2";
+
+  ryders[0].radius = parseInt(inputRad1?.value) || 17;
+  ryders[1].radius = parseInt(inputRad2?.value) || 17;
+
+  tName1.innerText = ryders[0].name;
+  tName2.innerText = ryders[1].name;
+
+  const isOpen = openPort();
+  if (!isOpen) return;
+  isStart = true;
+  raceTime.innerText = `00:00:0`;
+
+  timerId = setInterval(update, 100);
+
+  sendToPort("1");
+  getDataFromPort();
+
+  indicator.classList.add("indicator__active");
+  popap.classList.remove("popap__overlay_active");
+};
+
+openPopapBtn.addEventListener("click", openPopapBtnHndler);
 startRaceBtn.addEventListener("click", startRace);
-window.addEventListener("load", initRyders);
+
+window.addEventListener("load", init);

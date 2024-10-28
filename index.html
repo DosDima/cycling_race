@@ -9,6 +9,15 @@
   <body>
     <div class="popap__overlay" id="popap">
       <div class="popap__card">
+        <div style="display: flex; flex-direction: column; margin-bottom: 16px;">
+          <label for="distance">Distance (m)</label>
+          <input
+            style="width: 240px; margin-right: 8px"
+            type="number"
+            id="distance"
+            required
+          />
+        </div>
         <div class="popap__section">
           <div style="display: flex; flex-direction: column">
             <label for="rider_1_name">rider 1</label>
@@ -55,7 +64,7 @@
             </select>
           </div>
         </div>
-        <div class="btn" id="btn-start-race">Начать гонку!</div>
+        <div class="btn" id="btn_start_race">Начать гонку!</div>
       </div>
     </div>
     <div class="riders-info">
@@ -68,28 +77,28 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <tr id="t_rider_1">
             <th scope="row">1</th>
-            <th>Chris Chris</th>
-            <td>250 m</td>
+            <th id="t_mame_1">Chris Chris</th>
+            <td id="t_dist_1">250 m</td>
           </tr>
-          <tr>
+          <tr id="t_rider_2">
             <th scope="row">2</th>
-            <th>Dennis Chris</th>
-            <td>124 m</td>
+            <th id="t_mame_2">Dennis Chris</th>
+            <td id="t_dist_2">124 m</td>
           </tr>
         </tbody>
       </table>
     </div>
     <header>
-      <div class="race-time" id="race_time">22:22:42</div>
+      <div class="race-time" id="race_time">00:00:0</div>
     </header>
     <main>
       <canvas id="canvas" width="1200" height="240"></canvas>
     </main>
     <footer>
-      <div class="btn" id="btn-start">Start</div>
-      <div id="race-indicator" class="indicator"></div>
+      <div class="btn" id="btn_open_popap">Start</div>
+      <div id="race_indicator" class="indicator"></div>
     </footer>
     <script src="./src/script.js"></script>
   </body>

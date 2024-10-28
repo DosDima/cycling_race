@@ -90,7 +90,7 @@ canvas {
 .race-time {
   position: absolute;
   top: 54px;
-  left: 42%;
+  left: 43%;
   color: black;
   font-size: 42px;
   font-weight: 700;
@@ -139,7 +139,7 @@ tr {
   align-items: center;
   width: fit-content;
   height: fit-content;
-  padding: 24px;
+  padding: 24px 16px 24px 16px;
   background-color: var(--color-background);
 }
 
