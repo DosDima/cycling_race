@@ -21,6 +21,9 @@ const winPopap = document.getElementById("win_popap");
 const winName = document.getElementById("win_name");
 const winTime = document.getElementById("win_time");
 const winDistance = document.getElementById("win_distance");
+const port_popap = document.getElementById("port_popap");
+const btn_connect = document.getElementById("btn_connect");
+const port_input = document.getElementById("port_input");
 
 let isStart = false;
 let distance = 0;
@@ -32,16 +35,8 @@ let timeMinutes = 0;
 let timerId;
 let riders = [];
 let drowCof = 0;
-
-const port = new SerialPort({
-  path: "COM4",
-  baudRate: 115200,
-  autoOpen: false,
-  dataBits: 8,
-  stopBits: 1,
-});
-
-const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+let parser = null;
+let port = null;
 
 class Rider {
   constructor(x, y, width, height, name, mph, distance, image) {
@@ -71,18 +66,33 @@ class Rider {
 }
 
 const openPort = async () => {
-  port.open((err) => {
-    if (err) alert(`Failed to open port. Error: ${err}`);
-    return false;
+  port = new SerialPort({
+    path: port_input.value || "",
+    baudRate: 115200,
+    autoOpen: false,
+    dataBits: 8,
+    stopBits: 1,
   });
-  getDataFromPort();
-  return true;
+
+  port.open((err) => {
+    if (err) {
+      alert(`Failed to open port. Error: ${err}`);
+      return false;
+    }
+    console.log('isOpen');
+    
+    port_popap.classList.remove("popap__overlay_active");
+    parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
+    getDataFromPort();
+    return true
+  });
 };
 
 const sendToPort = (val) => {
   port.write(val, (err) => {
     if (err) {
-      return console.log("Error on write: ", err.message);
+      alert(`Failed on write. Error: ${err}`);
+      return;
     }
   });
 };
@@ -173,10 +183,6 @@ const stopRace = () => {
   indicator.classList.remove("indicator__active");
 };
 
-const init = () => {
-  openPort();
-};
-
 const update = () => {
   if (!isStart) return;
 
@@ -202,6 +208,6 @@ winPopap.addEventListener("click", () => {
 
 openPopapBtn.addEventListener("click", stopRace);
 startRaceBtn.addEventListener("click", startRace);
+btn_connect.addEventListener("click", openPort);
 
-window.addEventListener("load", init);
 window.addEventListener("beforeunload", closePort);

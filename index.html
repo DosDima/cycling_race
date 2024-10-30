@@ -7,6 +7,21 @@
     <link rel="stylesheet" href="./assets/style.css" />
   </head>
   <body>
+    <div class="popap__overlay popap__overlay_active"  id="port_popap">
+      <div class="popap__card" style="color: var(--color-primary);">
+        <div style="display: flex; flex-direction: column">
+          <label for="port_input">COM port</label>
+          <input
+            style="width: 240px;"
+            type="text"
+            id="port_input"
+            required
+            placeholder="COM1"
+          />
+        </div>
+        <div class="btn" id="btn_connect">Подключить</div>
+      </div>
+    </div>
     <div class="popap__overlay"  id="win_popap">
       <div class="popap__card" style="color: var(--color-primary);">
         <h1>Finish!</h1>

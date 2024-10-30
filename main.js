@@ -11,7 +11,7 @@ function createWin() {
   });
 
   win.setMenu(null);
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools(); // for development
   win.loadFile("index.html");
 }
 
