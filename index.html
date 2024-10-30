@@ -17,6 +17,7 @@
             id="port_input"
             required
             placeholder="COM1"
+            value="COM4"
           />
         </div>
         <div class="btn" id="btn_connect">Подключить</div>
@@ -39,6 +40,7 @@
             type="number"
             id="distance"
             required
+            value="250"
           />
         </div>
         <div class="popap__section">
@@ -49,6 +51,7 @@
               type="text"
               id="rider_1_name"
               required
+              value="A"
             />
           </div>
           <div style="display: flex; flex-direction: column">
@@ -70,6 +73,7 @@
               type="text"
               id="rider_2_name"
               required
+              value="B"
             />
           </div>
           <div style="display: flex; flex-direction: column">
@@ -111,14 +115,12 @@
     </div>
     <header>
       <div class="race-time" id="race_time">00:00:0</div>
+      <div id="race_indicator" class="indicator"></div>
+      <div class="btn btn_start" id="btn_open_popap">Start</div>
     </header>
     <main>
-      <canvas id="canvas" width="1200" height="240"></canvas>
+      <canvas id="canvas" width="1280" height="240"></canvas>
     </main>
-    <footer>
-      <div class="btn" id="btn_open_popap">Start</div>
-      <div id="race_indicator" class="indicator"></div>
-    </footer>
     <script src="./src/script.js"></script>
   </body>
 </html>

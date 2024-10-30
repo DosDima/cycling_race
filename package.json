@@ -1,6 +1,6 @@
 {
   "name": "cycling_race",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cycling race at home",
   "main": "main.js",
   "type": "commonjs",

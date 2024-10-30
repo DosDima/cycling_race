@@ -56,8 +56,8 @@ footer {
 }
 
 canvas {
-  position: absolute;
-  top: 420px;
+  position: fixed;
+  bottom: 0;
   background-image: url(./picture/road_1.png);
 }
 
@@ -107,12 +107,13 @@ canvas {
 }
 
 table {
+  padding: 8px;
   text-align: left;
   width: 320px;
   font-size: 20px;
   line-height: 1.2;
   letter-spacing: 0.1em;
-  color: var(--color-text-secondary);
+  color: black;
 }
 
 tr {
@@ -179,4 +180,12 @@ select {
   border-color: var(--color-primary);
   background: rgb(224, 110, 33);
   margin-bottom: 16px;
+}
+
+.btn_start {
+  position: fixed;
+  right: 8px;
+  top: 8px;
+  z-index: 444;
+  opacity: .7;
 }

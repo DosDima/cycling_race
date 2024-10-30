@@ -32,7 +32,6 @@ let stringTime = "00.00.0";
 let timeMilisec = 0;
 let timeSec = 0;
 let timeMinutes = 0;
-let timerId;
 let riders = [];
 let drowCof = 0;
 let parser = null;
@@ -143,13 +142,13 @@ const startRace = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   distance = parseInt(inputDistance?.value) || 250;
-  drowCof = 1100 / distance;
+  drowCof = 1000 / distance;
 
   riders[0] = new Rider(
     0,
-    40,
-    100,
-    100,
+    -25,
+    150,
+    150,
     inputName1?.value,
     parseInt(inputRad1?.value),
     0,
@@ -157,9 +156,9 @@ const startRace = () => {
   );
   riders[1] = new Rider(
     0,
-    130,
-    100,
-    100,
+    80,
+    150,
+    150,
     inputName2?.value,
     parseInt(inputRad2?.value),
     0,
@@ -175,10 +174,12 @@ const startRace = () => {
   tName2.innerText = riders[1].name;
   indicator.classList.add("indicator__active");
   startPopap.classList.remove("popap__overlay_active");
+  openPopapBtn.innerText = "Stop";
 };
 
 const stopRace = () => {
   if (!isStart) {
+    openPopapBtn.innerText = "Start";
     startPopap.classList.add("popap__overlay_active");
     return;
   }
@@ -210,8 +211,8 @@ const update = () => {
   }:${timeMilisec}`;
 
   raceTime.innerText = stringTime;
-  tDist1.innerText = riders[0].distance;
-  tDist2.innerText = riders[1].distance;
+  tDist1.innerText = riders[0].distance.toFixed(2);
+  tDist2.innerText = riders[1].distance.toFixed(2);
 };
 
 winPopap.addEventListener("click", () => {
@@ -221,5 +222,4 @@ winPopap.addEventListener("click", () => {
 openPopapBtn.addEventListener("click", stopRace);
 startRaceBtn.addEventListener("click", startRace);
 btn_connect.addEventListener("click", openPort);
-
 window.addEventListener("beforeunload", closePort);
