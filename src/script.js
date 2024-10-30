@@ -54,7 +54,7 @@ class Rider {
     this.x = newX;
     const img = new Image(this.width, this.height);
     img.src = this.image;
-    this.distance = (newX * 2136) / 1000;
+    this.distance = (newX * this.mph) / 1000;
     ctx.drawImage(
       img,
       this.distance * drowCof,
@@ -79,12 +79,12 @@ const openPort = async () => {
       alert(`Failed to open port. Error: ${err}`);
       return false;
     }
-    console.log('isOpen');
-    
+    console.log("isOpen");
+
     port_popap.classList.remove("popap__overlay_active");
     parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
     getDataFromPort();
-    return true
+    return true;
   });
 };
 
@@ -103,15 +103,30 @@ const getDataFromPort = () => {
     indicator.classList.toggle("indicator__active");
     const arr = data.split(":");
 
-    for (let i = 0; i < riders.length; i++) {
-      riders[i].update(arr[i]);
-      if (riders[i].distance >= distance) {
-        winName.innerText = `Победитель: ${riders[i].name}`;
-        winTime.innerText = `Время: ${stringTime}`;
-        winDistance.innerText = `Дистанция: ${distance} m.`;
-        stopRace();
-      }
+    riders[0].update(arr[0]);
+    riders[1].update(arr[1]);
+
+    if (riders[0].distance >= distance && riders[1].distance >= distance) {
+      winName.innerText = `Победитель: ${riders[0].name} && ${riders[1].name}`;
+      winTime.innerText = `Время: ${stringTime}`;
+      winDistance.innerText = `Дистанция: ${distance} m.`;
+      stopRace();
     }
+
+    if (riders[0].distance >= distance) {
+      winName.innerText = `Победитель: ${riders[0].name}`;
+      winTime.innerText = `Время: ${stringTime}`;
+      winDistance.innerText = `Дистанция: ${distance} m.`;
+      stopRace();
+    }
+
+    if (riders[1].distance >= distance) {
+      winName.innerText = `Победитель: ${riders[1].name}`;
+      winTime.innerText = `Время: ${stringTime}`;
+      winDistance.innerText = `Дистанция: ${distance} m.`;
+      stopRace();
+    }
+
     update();
   });
 };
@@ -134,7 +149,7 @@ const startRace = () => {
     0,
     40,
     100,
-    64,
+    100,
     inputName1?.value,
     parseInt(inputRad1?.value),
     0,
@@ -142,16 +157,14 @@ const startRace = () => {
   );
   riders[1] = new Rider(
     0,
-    150,
+    130,
     100,
-    64,
+    100,
     inputName2?.value,
     parseInt(inputRad2?.value),
     0,
     "./assets/picture/racer_2.png"
   );
-
-  timerId = setInterval(update, 100);
 
   sendToPort("1");
 
@@ -172,7 +185,6 @@ const stopRace = () => {
 
   sendToPort("0");
   isStart = false;
-  clearInterval(timerId);
 
   time = 0;
   timeMilisec = 0;
